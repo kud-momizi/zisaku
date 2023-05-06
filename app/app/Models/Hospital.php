@@ -6,21 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class Hospital extends Model
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'name',
-        'address_id',
-        'title',
-        'image',
-        'intro',
-        'tel',
-        'web_url',
-        'user_id',
-    ];
-
-    public function address()
+    public function user()
     {
-        return $this->belongsTo(Address::class);
+        return $this->belongsTo(User::class);
     }
+}
+
+class User extends Authenticatable
+{
+    use Notifiable;
+
+    /**
+     * Get the hospital record associated with the user.
+     */
+    public function hospital()
+    {
+        return $this->hasOne(Hospital::class);
+    }
+
+    // 他のコード
 }

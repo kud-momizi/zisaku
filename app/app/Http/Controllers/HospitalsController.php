@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Hospital;
 
 class HospitalsController extends Controller
 {
@@ -13,6 +14,7 @@ class HospitalsController extends Controller
      */
     public function index()
     {
+        $hospitals = Hospital::all();
         return view('hospitals.index', compact('hospitals'));
     }
 
@@ -23,19 +25,7 @@ class HospitalsController extends Controller
      */
     public function create()
     {
-            // ユーザーIDを取得
-        $user_id = auth()->user()->id;
-
-        // ユーザーIDをもとにHospitalsテーブルから該当のレコードを取得
-        $hospital = Hospital::where('user_id', $user_id)->first();
-
-        // Hospitalsテーブルにレコードが存在しない場合はhospitals.createビューを表示する
-        if (!$hospital) {
-            return view('hospitals.create');
-        }
-
-        // Hospitalsテーブルにレコードが存在する場合はhospitals.homeビューを表示する
-        return view('hospitals.home');
+     //
     }
 
     /**

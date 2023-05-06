@@ -89,7 +89,7 @@ class RegisterController extends Controller
         if (auth()->user()->role == 0) {
             return '/admin/home'; // 管理者の場合のリダイレクト先
         } elseif (auth()->user()->role == 2) {
-            return '/hospitals/create'; // 医療機関の場合のリダイレクト先
+            return '/hospitals/index'; // 医療機関の場合のリダイレクト先
         } else {
             return '/home'; // ユーザーの場合のリダイレクト先
         }

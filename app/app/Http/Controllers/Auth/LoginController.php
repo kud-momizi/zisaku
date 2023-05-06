@@ -43,17 +43,12 @@ class LoginController extends Controller
 
     protected function redirectTo()
     {
-        if (Auth::user()->role == 0) {
-            return '/admin/home';
-        } elseif (Auth::user()->role == 2) {
-            $hospital = Hospital::where('user_id', Auth::id())->first();
-            if ($hospital) {
-                return '/hospitals/home';
-            } else {
-                return '/hospitals/create';
-            }
+        if (Auth::check() && Auth::user()->role === 2) {
+            // 医療機関ユーザーの場合は、ホーム画面にリダイレクトする
+            return route('hospitals.index');
         } else {
-            return '/home';
+            // それ以外の場合は、デフォルトのリダイレクト先にリダイレクトする
+            return $this->redirectTo;
         }
     }
 }
