@@ -15,6 +15,11 @@
                     @endif
 
                     You are logged in!
+
+                    <form method="POST" action="{{ route('home') }}">
+                        @csrf
+                        <button type="submit" class="btn btn-primary">OK</button>
+                    </form>
                 </div>
             </div>
         </div>

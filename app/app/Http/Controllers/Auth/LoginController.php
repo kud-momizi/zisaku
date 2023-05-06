@@ -7,7 +7,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Hospital;
+
 
 class LoginController extends Controller
 {
@@ -44,8 +44,8 @@ class LoginController extends Controller
     protected function redirectTo()
     {
         if (Auth::check() && Auth::user()->role === 2) {
-            // 医療機関ユーザーの場合は、ホーム画面にリダイレクトする
-            return route('hospitals.index');
+            // 医療機関ユーザーの場合は、医療機関ホーム画面にリダイレクトする
+            return route('hospitals.home');
         } else {
             // それ以外の場合は、デフォルトのリダイレクト先にリダイレクトする
             return $this->redirectTo;

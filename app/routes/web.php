@@ -19,4 +19,7 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/hospitals', 'HospitalsController@index')->name('hospitals.index');
+
+Route::get('/hospitals_home', 'HospitalsController@index')->name('hospitals.home')->middleware('auth');
+Route::get('/hospitals_create', 'HospitalsController@create')->name('hospitals.create');
+Route::post('/hospitals', 'HospitalsController@store')->name('hospitals.store');

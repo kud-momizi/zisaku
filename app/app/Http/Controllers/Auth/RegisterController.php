@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\Hospital;
+use Illuminate\Support\Facades\Auth;
+
 
 
 
@@ -67,31 +69,24 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \App\User
      */
-    protected function create(array $data)
-    {
-        $user = new User([
+    protected function create(array $data){
+        return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'role'=>  $data['role'],
         ]);
-        $user->role = $data['role'];
-        $user->save();
-        return $user;  
     }
 
-    public function showRegistrationForm(Request $request)
-    {
-        $role = $request->role;
-        return view('auth.register', compact('role'));
-    }
 
-    protected function redirectTo() {
-        if (auth()->user()->role == 0) {
-            return '/admin/home'; // 管理者の場合のリダイレクト先
-        } elseif (auth()->user()->role == 2) {
-            return '/hospitals/index'; // 医療機関の場合のリダイレクト先
-        } else {
-            return '/home'; // ユーザーの場合のリダイレクト先
-        }
-    }
+        //     protected function redirectTo() {
+        //         if (auth()->user()->role == 0) {
+        //             return  redirect('/admin/home'); // 管理者の場合のリダイレクト先
+        //         } elseif (Auth::check() && Auth::user()->role === 2) {
+        //             return redirect('/hospitals_home'); // 医療機関の場合のリダイレクト先
+        //         } else {
+        //             return  redirect('/home'); // ユーザーの場合のリダイレクト先
+        //         }
+        //     }
+        
 }
