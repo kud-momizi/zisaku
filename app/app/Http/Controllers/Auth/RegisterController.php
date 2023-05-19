@@ -79,13 +79,14 @@ class RegisterController extends Controller
     }
 
 
-    protected function redirectTo() {
-        if (Auth::check() && Auth::user()->role === 0) {
-            return  redirect('/admins_home'); // 管理者の場合のリダイレクト先
-        } elseif (Auth::check() && Auth::user()->role === 2) {
-            return redirect('/hospitals_home'); // 医療機関の場合のリダイレクト先
+    protected function registered(Request $request, $user)
+    {
+        if ($user->role === 0) {
+            return redirect()->route('admins.home');
+        } elseif ($user->role === 2) {
+            return redirect()->route('hospitals.home');
         } else {
-            return  redirect('/users_home'); // ユーザーの場合のリダイレクト先
+            return redirect()->route('users.home');
         }
     }
         

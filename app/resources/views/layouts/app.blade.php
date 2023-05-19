@@ -23,7 +23,7 @@
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
+                <a class="navbar-brand" href="{{ Auth::check() ? (Auth::user()->role === 0 ? route('admins.home') : (Auth::user()->role === 1 ? route('users.home') : (Auth::user()->role === 2 ? route('hospitals.home') : route('users.home')))) : route('users.home') }}">
                     {{ ('医療機関検索システム') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">

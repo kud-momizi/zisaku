@@ -16,6 +16,11 @@ class Hospital extends Model
         return $this->belongsTo(Availability::class);
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'hospital_tags', 'hospital_id', 'tag_id');
+    }
+
     
 }
 

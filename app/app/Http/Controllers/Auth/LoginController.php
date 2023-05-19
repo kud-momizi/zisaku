@@ -46,9 +46,14 @@ class LoginController extends Controller
         if (Auth::check() && Auth::user()->role === 2) {
             // 医療機関ユーザーの場合は、医療機関ホーム画面にリダイレクトする
             return route('hospitals.home');
+        } elseif (Auth::check() && Auth::user()->role === 0) {
+            // 管理者ユーザーの場合は、管理者ホーム画面にリダイレクトする
+            return route('admins.home');
         } else {
-            // それ以外の場合は、デフォルトのリダイレクト先にリダイレクトする
-            return $this->redirectTo;
+            // ユーザーの場合は、ユーザーホーム画面にリダイレクトする
+            return route('users.home');
         }
     }
 }
+// // それ以外の場合は、デフォルトのリダイレクト先にリダイレクトする
+// return $this->redirectTo

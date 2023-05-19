@@ -25,23 +25,62 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-md-6">
-                                    <img src="{{ asset('storage/'.$hospital->image) }}" alt="{{ $hospital->name }}" class="img-fluid mb-4">
-                                </div>
-                                <div class="col-md-6">
-                                    <p>{{ $hospital->intro }}</p>
-                                    <ul class="list-group">
-                                        <li class="list-group-item">{{ __('電話番号') }}：{{ $hospital->tel }}</li>
-                                        <li class="list-group-item">{{ __('Webサイト') }}：<a href="{{ $hospital->web_url }}">{{ $hospital->web_url }}</a></li>
-                                        @if ($hospital->address)
-                                        <li class="list-group-item">{{ __('住所') }}：{{ $hospital->address->post_code }} {{ $hospital->address->ken_name }}{{ $hospital->address->city_name }}{{ $hospital->address->town_name }}{{ $hospital->address->block_name }}</li>
-                                        @endif
-                                    </ul>
-                                    
-                                </div>
-                                <!-- マップ -->
                                 <div class="col-md-12 my-4">
-                                    <div id="map" style="height: 400px; width: 100%;"></div>
+                                    <h3>追加したタグ一覧</h3>
+                                    @if ($hospital->tags && $hospital->tags->count() > 0)
+                                        <ul>
+                                            @foreach ($hospital->tags as $tag)
+                                                <li>{{ $tag->name }}</li>
+                                            @endforeach
+                                        </ul>
+                                    @else
+                                        <p>タグが追加されていません。</p>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card mt-4">
+                                        <div class="card-header">タグの追加</div>
+                                        <div class="card-body">
+                                            <form action="{{ route('hospitals.tags.add', $hospital->id) }}" method="POST">
+                                                @csrf
+                                                <div class="form-group">
+                                                    <label for="tag_id">タグを選択して追加</label>
+                                                    <select name="tag_id" id="tag_id" class="form-control">
+                                                        @foreach ($tags as $tag)
+                                                            <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">追加</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <img src="{{ asset('storage/'.$hospital->image) }}" alt="{{ $hospital->name }}" class="img-fluid mb-4">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p>{{ $hospital->intro }}</p>
+                                            <ul class="list-group">
+                                                <li class="list-group-item">{{ __('電話番号') }}：{{ $hospital->tel }}</li>
+                                                <li class="list-group-item">{{ __('Webサイト') }}：<a href="{{ $hospital->web_url }}">{{ $hospital->web_url }}</a></li>
+                                                @if ($hospital->address)
+                                                <li class="list-group-item">{{ __('住所') }}：{{ $hospital->address->post_code }} {{ $hospital->address->ken_name }}{{ $hospital->address->city_name }}{{ $hospital->address->town_name }}{{ $hospital->address->block_name }}</li>
+                                                @endif
+                                            </ul>
+                                            
+                                        </div>
+                                        <!-- マップ -->
+                                        <div class="col-md-12 my-4">
+                                            <div id="map" style="height: 400px; width: 100%;"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -136,5 +175,7 @@
                     }
                 });
             }
+
+            // APIキーは本番環境のみ記載（警告メールくるため）
         </script>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRa-cremQslgLCSgbEImhI5WZADCBZZEM&callback=initMap" async defer></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=(APIキー)&callback=initMap" async defer></script>

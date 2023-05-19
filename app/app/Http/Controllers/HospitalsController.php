@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Hospital;
 use App\Models\Address;
 use App\Models\Availability;
+use App\Models\Tag;
+use App\Models\HospitalTag;
 
 class HospitalsController extends Controller
 {
@@ -34,7 +36,9 @@ class HospitalsController extends Controller
         $hospital = Hospital::where('user_id', Auth::id())->first();
         $availabilities = Availability::where('hospital_id', $hospital->id)->get()->keyBy('day_of_week')->toArray();
 
-        return view('hospitals_home', compact('hospitals', 'availabilities'));
+        $tags = Tag::all(); // タグの一覧を取得
+
+        return view('hospitals_home', compact('hospitals', 'availabilities', 'tags'));
     }
 
     /**
@@ -207,5 +211,16 @@ class HospitalsController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function addTag(Request $request, Hospital $hospital)
+    {
+        $tagId = $request->input('tag_id');
+        $hospitalTag = new HospitalTag();
+        $hospitalTag->hospital()->associate($hospital);
+        $hospitalTag->tag()->associate($tagId);
+        $hospitalTag->save();
+
+        return redirect()->back()->with('success', 'タグが追加されました！');
     }
 }

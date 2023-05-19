@@ -17,6 +17,11 @@ class Availability extends Model
         'pm_limit',
         'note',
     ];
+    
+    public function availability()
+    {
+        return $this->belongsTo(Availability::class, 'availabilities_id');
+    }
 
     public $timestamps = false;
 }
