@@ -11,10 +11,10 @@ class Hospital extends Model
         return $this->belongsTo(Address::class);
     }
 
-    public function availability()
+    public function availabilities()
     {
-        return $this->belongsTo(Availability::class);
-    }
+        return $this->hasMany(Availability::class);
+    }   
 
     public function tags()
     {

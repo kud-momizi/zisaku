@@ -18,9 +18,9 @@ class Availability extends Model
         'note',
     ];
     
-    public function availability()
+    public function hospital()
     {
-        return $this->belongsTo(Availability::class, 'availabilities_id');
+        return $this->belongsTo(Hospital::class);
     }
 
     public $timestamps = false;
