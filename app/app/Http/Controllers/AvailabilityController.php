@@ -44,11 +44,11 @@ class AvailabilityController extends Controller
         $request->validate([
             'am_start_time' => 'nullable|date_format:H:i',
             'am_end_time' => 'nullable|date_format:H:i|after:am_start_time',
-            'am_limit' => 'required|integer|min:0',
+            'am_limit' => 'nullable|integer|min:0',
             'pm_start_time' => 'nullable|date_format:H:i',
             'pm_end_time' => 'nullable|date_format:H:i|after:pm_start_time',
-            'pm_limit' => 'required|integer|min:0',
-            'day_of_week' => 'required|integer|min:0|max:6',
+            'pm_limit' => 'nullable|integer|min:0',
+            'day_of_week' => 'nullable|integer|min:0|max:6',
             'note' => 'nullable|string|max:255',
         ]);
 

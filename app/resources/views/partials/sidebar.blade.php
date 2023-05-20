@@ -14,7 +14,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('tags.index') }}">一覧</a>
                 </li>
-                <!-- 他のタグ関連のメニュー項目を追加 -->
             </ul>
         </div>
     </div>

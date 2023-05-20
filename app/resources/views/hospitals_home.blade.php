@@ -133,6 +133,9 @@
                 @endif
             </tbody>
         </table>
+        <div class="col-12 text-center">
+            <a class="nav-link" href="{{ route('reservations.index') }}">予約者一覧</a>
+        </div>
     </div>
 </div>
 @endsection

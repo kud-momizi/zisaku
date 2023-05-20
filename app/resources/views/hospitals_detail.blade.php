@@ -43,43 +43,48 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">{{ __('受診時間') }}</div>
-                    <div class="card-body">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>{{ __('曜日') }}</th>
-                                    <th>{{ __('午前') }}</th>
-                                    <th>{{ __('午前予約可能数') }}</th>
-                                    <th>{{ __('午後') }}</th>
-                                    <th>{{ __('午後予約可能数') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach(['日', '月', '火', '水', '木', '金', '土'] as $idx => $dayOfWeek)
-                                    <tr>
-                                        @if ($dayOfWeek === '日' || $dayOfWeek === '土')
-                                            <td class="text-danger">{{ $dayOfWeek }}</td>
-                                        @else
-                                            <td>{{ $dayOfWeek }}</td>
-                                        @endif
-                                        <td>{{ $hospital->availabilities[$idx]['am_start_time'] ?? '' }}~{{ $hospital->availabilities[$idx]['am_end_time'] ?? '' }}</td>
-                                        <td>{{ $hospital->availabilities[$idx]['am_limit'] ?? '' }}</td>
-                                        <td>{{ $hospital->availabilities[$idx]['pm_start_time'] ?? '' }}~{{ $hospital->availabilities[$idx]['pm_end_time'] ?? '' }}</td>
-                                        <td>{{ $hospital->availabilities[$idx]['pm_limit'] ?? '' }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-8">
-            <div class="card">
                 <div class="card-body">
-                    <a href="{{ route('reservations.create', $hospital->id) }}" class="btn btn-primary">{{ __('予約する') }}</a>
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5>{{ $hospital->name }}</h5>
+                        @if ($hospital->isReserved())
+                            <form action="{{ route('reservations.cancel', $hospital->reservation->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">{{ __('予約キャンセル') }}</button>
+                            </form>
+                        @else
+                            <a href="{{ route('reservations.create', $hospital->id) }}" class="btn btn-primary">{{ __('予約する') }}</a>
+                        @endif
+                    </div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>{{ __('曜日') }}</th>
+                                <th>{{ __('午前') }}</th>
+                                <th>{{ __('午前予約可能数') }}</th>
+                                <th>{{ __('午後') }}</th>
+                                <th>{{ __('午後予約可能数') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(['日', '月', '火', '水', '木', '金', '土'] as $idx => $dayOfWeek)
+                                <tr>
+                                    @if ($dayOfWeek === '日' || $dayOfWeek === '土')
+                                        <td class="text-danger">{{ $dayOfWeek }}</td>
+                                    @else
+                                        <td>{{ $dayOfWeek }}</td>
+                                    @endif
+                                    <td>{{ $hospital->availabilities[$idx]['am_start_time'] ? substr($hospital->availabilities[$idx]['am_start_time'], 0, 5) : '' }}~{{ $hospital->availabilities[$idx]['am_end_time'] ? substr($hospital->availabilities[$idx]['am_end_time'], 0, 5) : '' }}</td>
+                                    <td>{{ $hospital->availabilities[$idx]['am_limit'] ?? '' }}</td>
+                                    <td>{{ $hospital->availabilities[$idx]['pm_start_time'] ? substr($hospital->availabilities[$idx]['pm_start_time'], 0, 5) : '' }}~{{ $hospital->availabilities[$idx]['pm_end_time'] ? substr($hospital->availabilities[$idx]['pm_end_time'], 0, 5) : '' }}</td>
+                                    <td>{{ $hospital->availabilities[$idx]['pm_limit'] ?? '' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <div class="col-12 text-center">
+                        <a class="nav-link" href="{{ route('reservations.index') }}">予約者一覧</a>
+                    </div>
                 </div>
             </div>
         </div>

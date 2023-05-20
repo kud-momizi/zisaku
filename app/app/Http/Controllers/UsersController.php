@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Hospital;
 use App\Models\Availability;
+use App\Models\Reservation;
 
 class UsersController extends Controller
 {
@@ -89,7 +91,9 @@ class UsersController extends Controller
 
     public function home()
     {
-        return view('users_home');
+        $reservedHospitals = Reservation::with('hospital')->where('user_id', Auth::id())->get()->pluck('hospital');
+
+        return view('users_home', compact('reservedHospitals'));
     }
 
     /**
@@ -125,4 +129,16 @@ class UsersController extends Controller
 
         return view('users_home', compact('hospitals'));
     }
+
+    public function cancelReservation($id)
+    {
+        $reservation = Reservation::findOrFail($id);
+    
+        // ユーザーが予約をキャンセルする処理
+        
+        $reservation->delete(); // 予約データを削除
+        
+        return redirect()->back()->with('success', '予約をキャンセルしました');
+    }
+
 }

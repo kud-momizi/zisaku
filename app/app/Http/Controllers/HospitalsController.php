@@ -9,6 +9,7 @@ use App\Models\Address;
 use App\Models\Availability;
 use App\Models\Tag;
 use App\Models\HospitalTag;
+use App\Models\Reservation;
 
 class HospitalsController extends Controller
 {
@@ -222,5 +223,22 @@ class HospitalsController extends Controller
         $hospitalTag->save();
 
         return redirect()->back()->with('success', 'タグが追加されました！');
+    }
+
+    public function showReservationIndex()
+    {
+        $reservations = Reservation::with('user')->get();
+
+        // 予約者を日付ごとにグループ化する
+        $reservationsByDate = $reservations->groupBy(function ($reservation) {
+            return $reservation->reservation_date;
+        });
+
+        // 日付ごとの予約者一覧を作成する
+        $reservationsByDate = $reservationsByDate->map(function ($reservations) {
+            return $reservations->pluck('user');
+        });
+
+        return view('reservations_index', compact('reservationsByDate'));
     }
 }

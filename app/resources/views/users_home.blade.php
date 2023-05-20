@@ -54,5 +54,31 @@
                 @endif
             </div>
         </div>
+
+        <div class="card mt-4">
+            <div class="card-header">予約済みの病院</div>
+            <div class="card-body">
+                @if (isset($reservedHospitals) && $reservedHospitals->count() > 0)
+                    <div class="row">
+                        @foreach ($reservedHospitals as $hospital)
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">{{ $hospital->name }}</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>タイトル:</strong> {{ $hospital->title }}</p>
+                                        <p><strong>住所:</strong> {{ $hospital->address->post_code }} {{ $hospital->address->ken_name }}{{ $hospital->address->city_name }}{{ $hospital->address->town_name }}{{ $hospital->address->block_name }}</p>
+                                        <a href="{{ route('hospitals.show', $hospital->id) }}" class="btn btn-primary">詳細を見る</a>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-center">予約済みの病院はありません</p>
+                @endif
+            </div>
+        </div>
     </div>
 @endsection

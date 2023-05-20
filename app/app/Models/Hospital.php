@@ -21,6 +21,14 @@ class Hospital extends Model
         return $this->belongsToMany(Tag::class, 'hospital_tags', 'hospital_id', 'tag_id');
     }
 
-    
+    public function reservation()
+    {
+        return $this->hasOne(Reservation::class);
+    }
+
+    public function isReserved()
+    {
+        return $this->reservation !== null;
+    }
 }
 
