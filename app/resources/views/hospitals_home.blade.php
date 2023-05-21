@@ -28,11 +28,13 @@
                                 <div class="col-md-12 my-4">
                                     <h3>追加したタグ一覧</h3>
                                     @if ($hospital->tags && $hospital->tags->count() > 0)
-                                        <ul>
+                                        <div class="row row-cols-auto">
                                             @foreach ($hospital->tags as $tag)
-                                                <li>{{ $tag->name }}</li>
+                                                <span class="border border-info">
+                                                    <div class="col">{{ $tag->name }}</div>
+                                                </span>
                                             @endforeach
-                                        </ul>
+                                        </div>
                                     @else
                                         <p>タグが追加されていません。</p>
                                     @endif
@@ -98,10 +100,9 @@
             <thead>
                 <tr>
                     <th>{{ __('曜日') }}</th>
-                    <th>{{ __('午前') }}</th>
-                    <th>{{ __('午前予約可能数') }}</th>
-                    <th>{{ __('午後') }}</th>
-                    <th>{{ __('午後予約可能数') }}</th>
+                    <th>{{ __('午前診療時間') }}</th>
+                    <th>{{ __('午後診療時間') }}</th>
+                    <th>{{ __('予約可能数') }}</th>
                     <th></th>
                 </tr>
             </thead>
@@ -113,26 +114,36 @@
                     @else
                     <td>{{ $dayOfWeek }}</td>
                     @endif
-                    <td>{{ $availabilities[$idx]['am_start_time'] ?? '' }}~{{ $availabilities[$idx]['am_end_time'] ?? '' }}</td>
-                    <td>{{ $availabilities[$idx]['am_limit'] ?? '' }}</td>
-                    <td>{{ $availabilities[$idx]['pm_start_time'] ?? '' }}~{{ $availabilities[$idx]['pm_end_time'] ?? '' }}</td>
-                    <td>{{ $availabilities[$idx]['pm_limit'] ?? '' }}</td>
                     <td>
-                        @if (isset($availabilities[$idx]))
+                        @if (isset($availabilities[$idx]['am_start_time']))
+                            {{ substr($availabilities[$idx]['am_start_time'], 0, 5) }}
+                            ~{{ substr($availabilities[$idx]['am_end_time'], 0, 5) }}
+                        @endif
+                    </td>
+                    <td>
+                        @if (isset($availabilities[$idx]['pm_start_time']))
+                            {{ substr($availabilities[$idx]['pm_start_time'], 0, 5) }}
+                            ~{{ substr($availabilities[$idx]['pm_end_time'], 0, 5) }}
+                        @endif
+                    </td>
+                    <td>{{ $availabilities[$idx]['day_limit'] ?? '' }}</td>
+                    <td>
+                        @if (!empty($availabilities[$idx]))
                             <a href="{{ route('availabilities.edit', $availabilities[$idx]['id']) }}" class="btn btn-warning border btn-sm">{{ __('編集') }}</a>
                         @else
-                        <a href="{{ route('availabilities.create', ['hospital_id' => $hospital->id]) }}" class="btn btn-outline-secondary btn-sm">{{ __('新規登録') }}</a>
+                            <a href="{{ route('availabilities.create', ['hospital_id' => $hospital->id]) }}" class="btn btn-outline-secondary btn-sm">{{ __('新規登録') }}</a>
                         @endif
                     </td>
                 </tr>
                 @endforeach
                 @if(empty($availabilities))
                 <tr>
-                    <td colspan="6" class="text-center">{{ __('データなし') }}</td>
+                    <td colspan="5" class="text-center">{{ __('データなし') }}</td>
                 </tr>
                 @endif
             </tbody>
         </table>
+   
         <div class="col-12 text-center">
             <a class="nav-link" href="{{ route('reservations.index') }}">予約者一覧</a>
         </div>
@@ -181,4 +192,4 @@
 
             // APIキーは本番環境のみ記載（警告メールくるため）
         </script>
-        <script src="https://maps.googleapis.com/maps/api/js?key=(APIキー)&callback=initMap" async defer></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRa-cremQslgLCSgbEImhI5WZADCBZZEM&callback=initMap" async defer></script>

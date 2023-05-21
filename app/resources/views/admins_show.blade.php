@@ -1,3 +1,4 @@
+@extends('layouts.app')
 
 @section('content')
 
@@ -11,6 +12,29 @@
                     <div>
                         <h2 class="mb-0">{{ $hospital->name }}</h2>
                         <h4>{{ $hospital->title }}</h4>
+                    </div>
+                    <form action="{{ route('hospitals.destroy', $hospital->id) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">{{ __('医療機関情報削除') }}</button>
+                    </form>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 my-4">
+                            <h3 class="text-center">タグ一覧</h3>
+                            @if ($hospital->tags && $hospital->tags->count() > 0)
+                                <div class="row row-cols-auto">
+                                    @foreach ($hospital->tags as $tag)
+                                        <span class="border border-info mb-4" style="margin-right: 10px;">
+                                            <div class="col">{{ $tag->name }}</div>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p>タグが追加されていません。</p>
+                            @endif
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
@@ -56,15 +80,20 @@
                             <tbody>
                                 @foreach(['日', '月', '火', '水', '木', '金', '土'] as $idx => $dayOfWeek)
                                     <tr>
-                                        @if ($dayOfWeek === '日' || $dayOfWeek === '土')
-                                            <td class="text-danger">{{ $dayOfWeek }}</td>
-                                        @else
-                                            <td>{{ $dayOfWeek }}</td>
-                                        @endif
-                                        <td>{{ $hospital->availabilities[$idx]['am_start_time'] ?? '' }}~{{ $hospital->availabilities[$idx]['am_end_time'] ?? '' }}</td>
-                                        <td>{{ $hospital->availabilities[$idx]['am_limit'] ?? '' }}</td>
-                                        <td>{{ $hospital->availabilities[$idx]['pm_start_time'] ?? '' }}~{{ $hospital->availabilities[$idx]['pm_end_time'] ?? '' }}</td>
-                                        <td>{{ $hospital->availabilities[$idx]['pm_limit'] ?? '' }}</td>
+                                        <td>{{ $dayOfWeek }}</td>
+                                        <td>
+                                            @if (isset($hospital->availabilities[$idx]['am_start_time']))
+                                                {{ substr($hospital->availabilities[$idx]['am_start_time'], 0, 5) }}
+                                                ~{{ substr($hospital->availabilities[$idx]['am_end_time'], 0, 5) }}
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if (isset($hospital->availabilities[$idx]['pm_start_time']))
+                                                {{ substr($hospital->availabilities[$idx]['pm_start_time'], 0, 5) }}
+                                                ~{{ substr($hospital->availabilities[$idx]['pm_end_time'], 0, 5) }}
+                                            @endif
+                                        </td>
+                                        <td>{{ $hospital->availabilities[$idx]['day_limit'] ?? '' }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>

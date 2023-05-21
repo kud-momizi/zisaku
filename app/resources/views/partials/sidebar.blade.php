@@ -9,10 +9,13 @@
                     <a class="nav-link" href="{{ route('admins.home') }}">ホーム</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('tags.create') }}">新規登録</a>
+                    <a class="nav-link" href="{{ route('tags.create') }}">タグ新規登録</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('tags.index') }}">一覧</a>
+                    <a class="nav-link" href="{{ route('tags.index') }}">タグ一覧</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('users.index') }}">ユーザー一覧</a>
                 </li>
             </ul>
         </div>

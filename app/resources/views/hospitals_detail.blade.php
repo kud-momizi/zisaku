@@ -16,6 +16,24 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
+                        <div class="col-md-12 my-4">
+                            <h3 class="text-center">タグ一覧</h3>
+                            @if ($hospital->tags && $hospital->tags->count() > 0)
+                                <div class="row row-cols-auto">
+                                    @foreach ($hospital->tags as $tag)
+                                        <span class="border border-info mb-4"style="margin-right: 10px;">
+                                            <div class="col">{{ $tag->name }}</div>
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p>タグが追加されていません。</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
                         <div class="col-md-6">
                             <img src="{{ asset('storage/'.$hospital->image) }}" alt="{{ $hospital->name }}" class="img-fluid mb-4">
                         </div>
@@ -69,22 +87,24 @@
                         <tbody>
                             @foreach(['日', '月', '火', '水', '木', '金', '土'] as $idx => $dayOfWeek)
                                 <tr>
-                                    @if ($dayOfWeek === '日' || $dayOfWeek === '土')
-                                        <td class="text-danger">{{ $dayOfWeek }}</td>
-                                    @else
-                                        <td>{{ $dayOfWeek }}</td>
-                                    @endif
-                                    <td>{{ $hospital->availabilities[$idx]['am_start_time'] ? substr($hospital->availabilities[$idx]['am_start_time'], 0, 5) : '' }}~{{ $hospital->availabilities[$idx]['am_end_time'] ? substr($hospital->availabilities[$idx]['am_end_time'], 0, 5) : '' }}</td>
-                                    <td>{{ $hospital->availabilities[$idx]['am_limit'] ?? '' }}</td>
-                                    <td>{{ $hospital->availabilities[$idx]['pm_start_time'] ? substr($hospital->availabilities[$idx]['pm_start_time'], 0, 5) : '' }}~{{ $hospital->availabilities[$idx]['pm_end_time'] ? substr($hospital->availabilities[$idx]['pm_end_time'], 0, 5) : '' }}</td>
-                                    <td>{{ $hospital->availabilities[$idx]['pm_limit'] ?? '' }}</td>
+                                    <td>{{ $dayOfWeek }}</td>
+                                    <td>
+                                        @if (isset($hospital->availabilities[$idx]['am_start_time']))
+                                            {{ substr($hospital->availabilities[$idx]['am_start_time'], 0, 5) }}
+                                            ~{{ substr($hospital->availabilities[$idx]['am_end_time'], 0, 5) }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if (isset($hospital->availabilities[$idx]['pm_start_time']))
+                                            {{ substr($hospital->availabilities[$idx]['pm_start_time'], 0, 5) }}
+                                            ~{{ substr($hospital->availabilities[$idx]['pm_end_time'], 0, 5) }}
+                                        @endif
+                                    </td>
+                                    <td>{{ $hospital->availabilities[$idx]['day_limit'] ?? '' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
-                    <div class="col-12 text-center">
-                        <a class="nav-link" href="{{ route('reservations.index') }}">予約者一覧</a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -131,4 +151,4 @@ alert("住所から位置の取得ができませんでした。: " + status);
 }
 // APIキーは本番環境のみ記載（警告メールくるため）
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=(APIキー)&callback=initMap" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRa-cremQslgLCSgbEImhI5WZADCBZZEM&callback=initMap" async defer></script>

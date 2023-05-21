@@ -10,6 +10,7 @@ use App\Models\Availability;
 use App\Models\Tag;
 use App\Models\HospitalTag;
 use App\Models\Reservation;
+use App\Models\User;
 
 class HospitalsController extends Controller
 {
@@ -209,9 +210,13 @@ class HospitalsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Hospital $hospital)
     {
-        //
+        // 医療機関情報の削除処理を行う
+        $hospital->delete();
+
+        // 削除後に管理者ホーム画面にリダイレクトするなどの処理を追加
+        return redirect()->route('admin.home')->with('success', '医療機関情報が削除されました。');
     }
 
     public function addTag(Request $request, Hospital $hospital)
@@ -227,18 +232,14 @@ class HospitalsController extends Controller
 
     public function showReservationIndex()
     {
-        $reservations = Reservation::with('user')->get();
+        $hospital = Hospital::where('user_id', Auth::id())->first();
+        $reservationsByDate = Reservation::with(['user', 'hospital'])
+            ->where('hospital_id', $hospital->id)
+            ->get()
+            ->groupBy(function ($reservation) {
+                return $reservation->date;
+            });
 
-        // 予約者を日付ごとにグループ化する
-        $reservationsByDate = $reservations->groupBy(function ($reservation) {
-            return $reservation->reservation_date;
-        });
-
-        // 日付ごとの予約者一覧を作成する
-        $reservationsByDate = $reservationsByDate->map(function ($reservations) {
-            return $reservations->pluck('user');
-        });
-
-        return view('reservations_index', compact('reservationsByDate'));
+        return view('reservations_index', compact('hospital', 'reservationsByDate'));
     }
 }

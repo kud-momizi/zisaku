@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Hospital;
 use App\Models\Availability;
+use App\Models\Reservation;
+use App\Models\Tag;
 
 class AdminsController extends Controller
 {
@@ -49,8 +51,9 @@ class AdminsController extends Controller
     {
         $hospital = Hospital::findOrFail($id);
         $availabilities = $hospital->availabilities;
-
-        return view('hospitals_detail', compact('hospital', 'availabilities'));
+        $availabilities = Availability::where('hospital_id', $hospital->id)->get()->keyBy('day_of_week')->toArray();
+        $tags = Tag::all(); // タグの一覧を取得
+        return view('admins_show', compact('hospital', 'availabilities', 'tags'));
     }
 
     /**

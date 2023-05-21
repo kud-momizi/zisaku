@@ -6,37 +6,32 @@
         <h2>{{ $hospital->name }}</h2>
 
         <form action="{{ route('availabilities.store',  ['hospital_id' => $hospital->id]) }}" method="POST">
-        <input type="hidden" name="hospital_id" value="{{ $hospital->id }}">
+            <input type="hidden" name="hospital_id" value="{{ $hospital->id }}">
             @csrf
 
             <div class="form-group">
                 <label for="am_start_time">午前開始時間</label>
-                <input type="time" name="am_start_time" class="form-control" required>
+                <input type="time" name="am_start_time" class="form-control">
             </div>
 
             <div class="form-group">
                 <label for="am_end_time">午前終了時間</label>
-                <input type="time" name="am_end_time" class="form-control" required>
+                <input type="time" name="am_end_time" class="form-control">
             </div>
 
             <div class="form-group">
                 <label for="pm_start_time">午後開始時間</label>
-                <input type="time" name="pm_start_time" class="form-control" required>
+                <input type="time" name="pm_start_time" class="form-control">
             </div>
 
             <div class="form-group">
                 <label for="pm_end_time">午後終了時間</label>
-                <input type="time" name="pm_end_time" class="form-control" required>
+                <input type="time" name="pm_end_time" class="form-control">
             </div>
 
             <div class="form-group">
-                <label for="am_limit">午前受付可能人数</label>
-                <input type="number" name="am_limit" class="form-control" required>
-            </div>
-
-            <div class="form-group">
-                <label for="pm_limit">午後受付可能人数</label>
-                <input type="number" name="pm_limit" class="form-control" required>
+                <label for="day_limit">受け入れ人数</label>
+                <input type="number" name="day_limit" class="form-control">
             </div>
 
             <div class="form-group">
@@ -50,11 +45,6 @@
                     <option value="5">金曜日</option>
                     <option value="6">土曜日</option>
                 </select>
-            </div>
-
-            <div class="form-group">
-                <label for="note">備考</label>
-                <textarea name="note" class="form-control" rows="3"></textarea>
             </div>
 
             <button type="submit" class="btn btn-primary">登録する</button>

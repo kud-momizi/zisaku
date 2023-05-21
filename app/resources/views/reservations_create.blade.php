@@ -1,4 +1,3 @@
-<!-- reservations/create.blade.php -->
 
 @extends('layouts.app')
 
@@ -11,6 +10,15 @@
                 <div class="card">
                     <div class="card-header">{{ __('予約') }}</div>
                     <div class="card-body">
+                    @if($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                         <form method="POST" action="{{ route('reservations.store') }}">
                             @csrf
 
@@ -29,19 +37,9 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="am_pm" class="col-md-4 col-form-label text-md-right">{{ __('午前/午後') }}</label>
-                                <div class="col-md-6">
-                                    <select class="form-control" id="am_pm" name="am_pm">
-                                        <option value="0">{{ __('午前') }}</option>
-                                        <option value="1">{{ __('午後') }}</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
                                 <label for="date" class="col-md-4 col-form-label text-md-right">{{ __('日付') }}</label>
                                 <div class="col-md-6">
-                                    <input type="date" class="form-control" id="date" name="date" required>
+                                    <input type="date" class="form-control" id="date" name="date" required {{ implode(' ', $unavailableDays) }}>
                                 </div>
                             </div>
 

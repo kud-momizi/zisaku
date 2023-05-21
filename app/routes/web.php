@@ -27,12 +27,13 @@ Route::get('/hospitals_edit/{hospital_id}', 'HospitalsController@edit')->name('h
 Route::put('/hospitals_edit/{hospital_id}', 'HospitalsController@update')->name('hospitals.update');
 Route::post('hospitals/{hospital}/tags/add', 'HospitalsController@addTag')->name('hospitals.tags.add');
 Route::get('/reservations', 'HospitalsController@showReservationIndex')->name('reservations.index');
+Route::delete('/admins/{hospital}', 'HospitalsController@destroy')->name('hospitals.destroy');
 
 Route::get('/availabilities_create/{hospital_id}', 'AvailabilityController@create')->name('availabilities.create');
 Route::post('/availabilities_create/{hospital_id}', 'AvailabilityController@store')->name('availabilities.store');
 
-Route::get('/availabilities_edit/{hospital_id}', 'AvailabilityController@edit')->name('availabilities.edit');
-Route::put('/availabilities_edit/{hospital_id}', 'AvailabilityController@update')->name('availabilities.update');
+Route::get('/availabilities_edit/{availability_id}', 'AvailabilityController@edit')->name('availabilities.edit');
+Route::put('/availabilities_edit/{availability_id}', 'AvailabilityController@update')->name('availabilities.update');
 
 Route::get('/users_home', 'UsersController@home')->name('users.home');
 Route::get('/hospitals/search', 'UsersController@search')->name('hospitals.search');
@@ -42,7 +43,9 @@ Route::get('/hospitals/{hospital}', 'UsersController@show')->name('hospitals.sho
 Route::get('/admins_home', 'AdminsController@home')->name('admins.home');
 Route::get('/admins/search', 'AdminsController@search')->name('admins.search');
 Route::get('/admins/{hospital}', 'AdminsController@show')->name('admins.show');
-Route::delete('/reservations/{id}/cancel', 'UsersController@cancelReservation')->name('reservations.cancel');
+Route::get('/admins', 'UsersController@index')->name('users.index');
+Route::delete('/admins_index/{user}', 'UsersController@destroy')->name('users.destroy');
+
 
 Route::resource('tags', 'TagController')->except(['index', 'show']);
 Route::get('tags_create', 'TagController@create')->name('tags.create');
@@ -50,3 +53,4 @@ Route::get('tags_index', 'TagController@index')->name('tags.index');
 
 Route::get('/reservations/create/{hospital}', 'ReservationsController@create')->name('reservations.create');
 Route::post('/reservations', 'ReservationsController@store')->name('reservations.store');
+Route::delete('/reservations/{id}/cancel', 'UsersController@cancelReservation')->name('reservations.cancel');

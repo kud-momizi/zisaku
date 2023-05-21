@@ -11,10 +11,9 @@ class Availability extends Model
         'day_of_week',
         'am_start_time',
         'am_end_time',
-        'am_limit',
         'pm_start_time',
         'pm_end_time',
-        'pm_limit',
+        'day_limit',
         'note',
     ];
     

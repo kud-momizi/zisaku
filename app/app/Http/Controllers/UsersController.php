@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Hospital;
 use App\Models\Availability;
 use App\Models\Reservation;
+use App\Models\Tag;
+use App\Models\User;
+use App\Models\HospitalTag;
 
 class UsersController extends Controller
 {
@@ -15,9 +18,18 @@ class UsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $users = User::orderBy('created_at', 'desc')->get();
+
+        // 検索ロジック
+        $search = $request->input('search');
+        if ($search) {
+            $users = User::where('name', 'like', '%' . $search . '%')->get();
+        }
+        $tags = Tag::all();
+
+        return view('admins_index', compact('users', 'search','tags'));
     }
 
     /**
@@ -51,8 +63,10 @@ class UsersController extends Controller
     {
         $hospital = Hospital::findOrFail($id);
         $availabilities = $hospital->availabilities;
+        $availabilities = Availability::where('hospital_id', $hospital->id)->get()->keyBy('day_of_week')->toArray();
+        $tags = Tag::all(); // タグの一覧を取得
+        return view('hospitals_detail', compact('hospital', 'availabilities', 'tags'));
 
-        return view('hospitals_detail', compact('hospital', 'availabilities'));
     }
 
     /**
@@ -86,7 +100,10 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = User::findOrFail($id);
+        $user->delete();
+    
+        return view('admins_index')->with('success', 'ユーザーを削除しました');
     }
 
     public function home()
@@ -104,30 +121,35 @@ class UsersController extends Controller
      */
     public function search(Request $request)
     {
-        $keyword = $request->input('keyword');
-        $address = $request->input('address');
-        $workingHours = $request->input('search_hours');
+        $searchHospital = $request->input('search_hospital');
+        $searchAddress = $request->input('search_address');
+        $searchTag = $request->input('search_tag');
 
-        // Build the search query
         $query = Hospital::query();
+        $tags = Tag::all();
 
-        if ($keyword) {
-            $query->where('name', 'like', '%' . $keyword . '%');
+        if ($searchHospital) {
+            $query->where('name', 'like', '%' . $searchHospital . '%');
         }
 
-        if ($address) {
-            $query->whereHas('address', function ($query) use ($address) {
-                $query->where('address', 'like', '%' . $address . '%');
+        if ($searchAddress) {
+            $query->whereHas('address', function ($query) use ($searchAddress) {
+                $query->where('ken_name', 'like', '%' . $searchAddress . '%')
+                    ->orWhere('city_name', 'like', '%' . $searchAddress . '%')
+                    ->orWhere('town_name', 'like', '%' . $searchAddress . '%')
+                    ->orWhere('block_name', 'like', '%' . $searchAddress . '%');
             });
         }
 
-        if ($workingHours) {
-            $query->where('working_hours', 'like', '%' . $workingHours . '%');
+        if ($searchTag) {
+            $query->whereHas('tags', function ($query) use ($searchTag) {
+                $query->where('tags.id', $searchTag);
+            });
         }
 
         $hospitals = $query->paginate(5);
 
-        return view('users_home', compact('hospitals'));
+        return view('users_home', compact('hospitals', 'tags'));
     }
 
     public function cancelReservation($id)

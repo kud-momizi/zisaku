@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Reservation;
 use App\Models\Hospital;
+use App\Models\Availability;
 use Illuminate\Http\Request;
 
 class ReservationsController extends Controller
@@ -25,7 +26,16 @@ class ReservationsController extends Controller
      */
     public function create(Hospital $hospital)
     {
-        return view('reservations_create', compact('hospital'));
+        $availabilities = Availability::where('hospital_id', $hospital->id)->get()->keyBy('day_of_week')->toArray();
+        $unavailableDays = [];
+
+        foreach ($availabilities as $dayOfWeek => $availability) {
+            if (!$availability || $availability['day_limit'] === null) {
+                $unavailableDays[] = $dayOfWeek;
+            }
+        }
+
+        return view('reservations_create', compact('hospital', 'unavailableDays'));
     }
 
     /**
@@ -36,26 +46,47 @@ class ReservationsController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        $request->validate([
             'hospital_id' => 'required',
             'user_id' => 'required',
-            'am_pm' => 'required',
-            'date' => 'required',
-            'comment' => 'nullable|max:200',
+            'date' => 'required|date',
+            'comment' => 'nullable|string|max:200',
         ]);
 
-        // 予約モデルを作成して保存
+        $hospitalId = $request->input('hospital_id');
+        $userId = $request->input('user_id');
+        $date = $request->input('date');
+        $dayOfWeek = date('w', strtotime($date)); // 選択した日付の曜日を取得
+
+        // 予約可能日を取得
+        $availability = Availability::where('hospital_id', $hospitalId)
+            ->where('day_of_week', $dayOfWeek)
+            ->first();
+
+        // 受入人数が設定されていない場合はエラーメッセージを表示
+        if (!$availability || $availability->day_limit === null) {
+            return redirect()->back()->withErrors('予約できない日付です。');
+        }
+
+        // 予約済み人数を取得
+        $reservedCount = Reservation::where('hospital_id', $hospitalId)
+            ->where('date', $date)
+            ->count();
+
+        // 受け入れ可能人数を超える場合はエラーメッセージを表示
+        if ($reservedCount >= $availability->day_limit) {
+            return redirect()->back()->withErrors('予約可能人数に達しています。');
+        }
+
+        // 予約の作成
         $reservation = new Reservation();
-        $reservation->hospital_id = $request->input('hospital_id');
-        $reservation->user_id = $request->input('user_id');
-        $reservation->am_pm = $request->input('am_pm');
-        $reservation->date = $request->input('date');
+        $reservation->hospital_id = $hospitalId;
+        $reservation->user_id = $userId;
+        $reservation->date = $date;
         $reservation->comment = $request->input('comment');
         $reservation->save();
 
-        $redirect = redirect()->route('hospitals.show', $request->input('hospital_id'))->with('success', '予約が完了しました！');
-
-        return $redirect;
+        return view('users_home');
     }
 
     /**

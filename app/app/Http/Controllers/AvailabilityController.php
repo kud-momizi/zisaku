@@ -44,10 +44,9 @@ class AvailabilityController extends Controller
         $request->validate([
             'am_start_time' => 'nullable|date_format:H:i',
             'am_end_time' => 'nullable|date_format:H:i|after:am_start_time',
-            'am_limit' => 'nullable|integer|min:0',
+            'day_limit' => 'nullable|integer|min:0',
             'pm_start_time' => 'nullable|date_format:H:i',
             'pm_end_time' => 'nullable|date_format:H:i|after:pm_start_time',
-            'pm_limit' => 'nullable|integer|min:0',
             'day_of_week' => 'nullable|integer|min:0|max:6',
             'note' => 'nullable|string|max:255',
         ]);
@@ -57,10 +56,9 @@ class AvailabilityController extends Controller
             'day_of_week' => $request->input('day_of_week'),
             'am_start_time' => $request->input('am_start_time'),
             'am_end_time' => $request->input('am_end_time'),
-            'am_limit' => $request->input('am_limit'),
+            'day_limit' => $request->input('day_limit'),
             'pm_start_time' => $request->input('pm_start_time'),
             'pm_end_time' => $request->input('pm_end_time'),
-            'pm_limit' => $request->input('pm_limit'),
             'note' => $request->input('note')
         ]);
 
@@ -88,9 +86,12 @@ class AvailabilityController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($availability_id)
     {
-        //
+        $availability = Availability::findOrFail($availability_id);
+        $hospital = $availability->hospital;
+
+        return view('availabilities_edit', compact('hospital', 'availability'));
     }
 
     /**
@@ -100,9 +101,33 @@ class AvailabilityController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $availability_id)
     {
-        //
+        $availability = Availability::findOrFail($availability_id);
+        $hospital = $availability->hospital;
+        
+
+        $request->validate([
+            'am_start_time' => 'nullable|date_format:H:i',
+            'am_end_time' => 'nullable|date_format:H:i|after:am_start_time',
+            'day_limit' => 'nullable|integer|min:0',
+            'pm_start_time' => 'nullable|date_format:H:i',
+            'pm_end_time' => 'nullable|date_format:H:i|after:pm_start_time',
+            'day_of_week' => 'nullable|integer|min:0|max:6',
+        ]);
+
+        $availability->update([
+            'hospital_id' => $hospital->id,
+            'am_start_time' => $request->input('am_start_time'),
+            'am_end_time' => $request->input('am_end_time'),
+            'day_limit' => $request->input('day_limit'),
+            'pm_start_time' => $request->input('pm_start_time'),
+            'pm_end_time' => $request->input('pm_end_time'),
+            'day_of_week' => $request->input('day_of_week'),
+        ]);
+
+        $availability->save();
+        return redirect()->route('hospitals.home')->with('success', __('予約可能時間を修正しました。'));
     }
 
     /**

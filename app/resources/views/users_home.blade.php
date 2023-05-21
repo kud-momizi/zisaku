@@ -19,8 +19,15 @@
                                 <input type="text" name="search_address" id="search_address" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="search_hours">診療時間</label>
-                                <input type="text" name="search_hours" id="search_hours" class="form-control">
+                                <label for="search_tag">タグ</label>
+                                <select name="search_tag" id="search_tag" class="form-control">
+                                    <option value="">選択してください</option>
+                                    @isset($tags)
+                                        @foreach ($tags as $tag)
+                                            <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                        @endforeach
+                                    @endisset
+                                </select>
                             </div>
                             <button type="submit" class="btn btn-primary">検索</button>
                         </form>
