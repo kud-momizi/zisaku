@@ -3,7 +3,11 @@
 @section('content')
 <div class="container">
     <h1 class="text-center">医療機関ホーム画面</h1>
-
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
 
     <div class="row justify-content-center">
         @if ($hospitals->count() > 0)

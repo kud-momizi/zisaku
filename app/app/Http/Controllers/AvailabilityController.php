@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Hospital;
 use App\Models\Availability;
@@ -104,8 +105,6 @@ class AvailabilityController extends Controller
     public function update(Request $request, $availability_id)
     {
         $availability = Availability::findOrFail($availability_id);
-        $hospital = $availability->hospital;
-        
 
         $request->validate([
             'am_start_time' => 'nullable|date_format:H:i',
@@ -116,17 +115,15 @@ class AvailabilityController extends Controller
             'day_of_week' => 'nullable|integer|min:0|max:6',
         ]);
 
-        $availability->update([
-            'hospital_id' => $hospital->id,
-            'am_start_time' => $request->input('am_start_time'),
-            'am_end_time' => $request->input('am_end_time'),
-            'day_limit' => $request->input('day_limit'),
-            'pm_start_time' => $request->input('pm_start_time'),
-            'pm_end_time' => $request->input('pm_end_time'),
-            'day_of_week' => $request->input('day_of_week'),
-        ]);
+        $availability->am_start_time = $request->input('am_start_time');
+        $availability->am_end_time = $request->input('am_end_time');
+        $availability->day_limit = $request->input('day_limit');
+        $availability->pm_start_time = $request->input('pm_start_time');
+        $availability->pm_end_time = $request->input('pm_end_time');
+        $availability->day_of_week = $request->input('day_of_week');
 
         $availability->save();
+
         return redirect()->route('hospitals.home')->with('success', __('予約可能時間を修正しました。'));
     }
 
