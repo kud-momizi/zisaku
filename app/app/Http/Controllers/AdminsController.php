@@ -97,25 +97,42 @@ class AdminsController extends Controller
 
     public function search(Request $request)
     {
-        $keyword = $request->input('keyword');
-        $address = $request->input('address');
-        $workingHours = $request->input('search_hours');
+        $searchHospital = $request->input('search_hospital');
+        $searchPrefecture = $request->input('search_prefecture');
+        $searchCity = $request->input('search_city');
+        $searchAddress = $request->input('search_address');
+        $searchTag = $request->input('search_tag');
 
-        // Build the search query
         $query = Hospital::query();
+        $tags = Tag::all();
 
-        if ($keyword) {
-            $query->where('name', 'like', '%' . $keyword . '%');
+        if ($searchHospital) {
+            $query->where('name', 'like', '%' . $searchHospital . '%');
         }
 
-        if ($address) {
-            $query->whereHas('address', function ($query) use ($address) {
-                $query->where('address', 'like', '%' . $address . '%');
+        if ($searchPrefecture || $searchCity || $searchAddress) {
+            $query->whereHas('address', function ($query) use ($searchPrefecture, $searchCity, $searchAddress) {
+                if ($searchPrefecture) {
+                    $query->where('ken_name', 'like', '%' . $searchPrefecture . '%');
+                }
+        
+                if ($searchCity) {
+                    $query->where('city_name', 'like', '%' . $searchCity . '%');
+                }
+        
+                if ($searchAddress) {
+                    $query->where(function ($query) use ($searchAddress) {
+                        $query->where('town_name', 'like', '%' . $searchAddress . '%')
+                            ->orWhere('block_name', 'like', '%' . $searchAddress . '%');
+                    });
+                }
             });
         }
 
-        if ($workingHours) {
-            $query->where('working_hours', 'like', '%' . $workingHours . '%');
+        if ($searchTag) {
+            $query->whereHas('tags', function ($query) use ($searchTag) {
+                $query->where('tags.id', $searchTag);
+            });
         }
 
         $hospitals = $query->paginate(5);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use App\Models\Hospital;
 use App\Models\Address;
@@ -201,7 +202,7 @@ class HospitalsController extends Controller
         $hospital->save();
 
         // 保存が完了したら、リダイレクトする
-        return redirect('/hospitals_home')->with('success', '医療機関情報を更新しました！');
+        return redirect()->route('hospitals.home')->with('success', '医療機関情報を更新しました！');
     }
 
     /**
@@ -215,12 +216,23 @@ class HospitalsController extends Controller
         // 医療機関情報の削除処理を行う
         $hospital->delete();
 
-        // 削除後に管理者ホーム画面にリダイレクトするなどの処理を追加
-        return redirect()->route('admin.home')->with('success', '医療機関情報が削除されました。');
+        return redirect()->route('admins.home')->with('success', '医療機関情報が削除されました。');
     }
 
     public function addTag(Request $request, Hospital $hospital)
     {
+
+        $request->validate([
+            'tag_id' => [
+                'required',
+                Rule::unique('hospital_tags')->where(function ($query) use ($hospital) {
+                    return $query->where('hospital_id', $hospital->id);
+                }),
+            ],
+        ], [
+            'tag_id.unique' => '既に登録済みのタグです',
+        ]);
+
         $tagId = $request->input('tag_id');
         $hospitalTag = new HospitalTag();
         $hospitalTag->hospital()->associate($hospital);

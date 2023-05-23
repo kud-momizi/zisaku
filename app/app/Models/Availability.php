@@ -14,7 +14,6 @@ class Availability extends Model
         'pm_start_time',
         'pm_end_time',
         'day_limit',
-        'note',
     ];
     
     public function hospital()

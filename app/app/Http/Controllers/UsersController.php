@@ -122,6 +122,8 @@ class UsersController extends Controller
     public function search(Request $request)
     {
         $searchHospital = $request->input('search_hospital');
+        $searchPrefecture = $request->input('search_prefecture');
+        $searchCity = $request->input('search_city');
         $searchAddress = $request->input('search_address');
         $searchTag = $request->input('search_tag');
 
@@ -132,12 +134,22 @@ class UsersController extends Controller
             $query->where('name', 'like', '%' . $searchHospital . '%');
         }
 
-        if ($searchAddress) {
-            $query->whereHas('address', function ($query) use ($searchAddress) {
-                $query->where('ken_name', 'like', '%' . $searchAddress . '%')
-                    ->orWhere('city_name', 'like', '%' . $searchAddress . '%')
-                    ->orWhere('town_name', 'like', '%' . $searchAddress . '%')
-                    ->orWhere('block_name', 'like', '%' . $searchAddress . '%');
+        if ($searchPrefecture || $searchCity || $searchAddress) {
+            $query->whereHas('address', function ($query) use ($searchPrefecture, $searchCity, $searchAddress) {
+                if ($searchPrefecture) {
+                    $query->where('ken_name', 'like', '%' . $searchPrefecture . '%');
+                }
+        
+                if ($searchCity) {
+                    $query->where('city_name', 'like', '%' . $searchCity . '%');
+                }
+        
+                if ($searchAddress) {
+                    $query->where(function ($query) use ($searchAddress) {
+                        $query->where('town_name', 'like', '%' . $searchAddress . '%')
+                            ->orWhere('block_name', 'like', '%' . $searchAddress . '%');
+                    });
+                }
             });
         }
 
@@ -149,7 +161,9 @@ class UsersController extends Controller
 
         $hospitals = $query->paginate(5);
 
-        return view('users_home', compact('hospitals', 'tags'));
+        $reservedHospitals = Reservation::with('hospital')->where('user_id', Auth::id())->get()->pluck('hospital');
+
+        return view('users_home', compact('hospitals', 'tags', 'reservedHospitals'));
     }
 
     public function cancelReservation($id)

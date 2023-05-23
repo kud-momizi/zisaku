@@ -8,6 +8,15 @@
             {{ session('success') }}
         </div>
     @endif
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <div class="row justify-content-center">
         @if ($hospitals->count() > 0)
@@ -111,89 +120,91 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach(['日', '月', '火', '水', '木', '金', '土'] as $idx => $dayOfWeek)
-                <tr>
-                    @if ($dayOfWeek === '日' || $dayOfWeek === '土')
-                    <td class="text-danger">{{ $dayOfWeek }}</td>
-                    @else
-                    <td>{{ $dayOfWeek }}</td>
-                    @endif
-                    <td>
-                        @if (isset($availabilities[$idx]['am_start_time']))
-                            {{ substr($availabilities[$idx]['am_start_time'], 0, 5) }}
-                            ~{{ substr($availabilities[$idx]['am_end_time'], 0, 5) }}
-                        @endif
-                    </td>
-                    <td>
-                        @if (isset($availabilities[$idx]['pm_start_time']))
-                            {{ substr($availabilities[$idx]['pm_start_time'], 0, 5) }}
-                            ~{{ substr($availabilities[$idx]['pm_end_time'], 0, 5) }}
-                        @endif
-                    </td>
-                    <td>{{ $availabilities[$idx]['day_limit'] ?? '' }}</td>
-                    <td>
-                        @if (!empty($availabilities[$idx]))
-                            <a href="{{ route('availabilities.edit', $availabilities[$idx]['id']) }}" class="btn btn-warning border btn-sm">{{ __('編集') }}</a>
+                @for ($i = 0; $i < 7; $i++)
+                    @php
+                        $dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][$i];
+                        $availability = $availabilities[$i] ?? null;
+                    @endphp
+                    <tr>
+                        @if ($dayOfWeek === '日' || $dayOfWeek === '土')
+                            <td class="text-danger">{{ $dayOfWeek }}</td>
                         @else
-                            <a href="{{ route('availabilities.create', ['hospital_id' => $hospital->id]) }}" class="btn btn-outline-secondary btn-sm">{{ __('新規登録') }}</a>
+                            <td>{{ $dayOfWeek }}</td>
                         @endif
-                    </td>
-                </tr>
-                @endforeach
-                @if(empty($availabilities))
-                <tr>
-                    <td colspan="5" class="text-center">{{ __('データなし') }}</td>
-                </tr>
+                        <td>
+                            @if (isset($availability['am_start_time']))
+                                {{ substr($availability['am_start_time'], 0, 5) }}
+                                ~{{ substr($availability['am_end_time'], 0, 5) }}
+                            @endif
+                        </td>
+                        <td>
+                            @if (isset($availability['pm_start_time']))
+                                {{ substr($availability['pm_start_time'], 0, 5) }}
+                                ~{{ substr($availability['pm_end_time'], 0, 5) }}
+                            @endif
+                        </td>
+                        <td>{{ $availability['day_limit'] ?? '' }}</td>
+                        <td>
+                            @if ($availability)
+                                <a href="{{ route('availabilities.edit', ['availability_id' => $availability['id']]) }}" class="btn btn-warning border btn-sm">{{ __('編集') }}</a>
+                            @else
+                                <a href="{{ route('availabilities.create', ['hospital_id' => $hospital->id]) }}" class="btn btn-outline-secondary btn-sm">{{ __('新規登録') }}</a>
+                            @endif
+                        </td>
+                    </tr>
+                @endfor
+                @if (empty($availabilities))
+                    <tr>
+                        <td colspan="5" class="text-center">{{ __('データなし') }}</td>
+                    </tr>
                 @endif
             </tbody>
         </table>
-   
         <div class="col-12 text-center">
             <a class="nav-link" href="{{ route('reservations.index') }}">予約者一覧</a>
         </div>
     </div>
-</div>
 @endsection
 
 
-        <script>
-            function initMap() {
-                var map, map_center;
-                var opts = {
-                    zoom: 16, // 初期のズームレベル
-                    mapTypeId: "roadmap" // 初期マップタイプ
-                };
+    <script>
+        function initMap() {
+            var map, map_center;
+            var opts = {
+                zoom: 16, // 初期のズームレベル
+                mapTypeId: "roadmap" // 初期マップタイプ
+            };
 
-                map = new google.maps.Map(document.getElementById("map"), opts);
+            map = new google.maps.Map(document.getElementById("map"), opts);
 
-                var geocoder = new google.maps.Geocoder();
-                var address = "{{ $hospital->address->post_code }} {{ $hospital->address->ken_name }}{{ $hospital->address->city_name }}{{ $hospital->address->town_name }}{{ $hospital->address->block_name }}";
+            var geocoder = new google.maps.Geocoder();
+            var address = "{{ $hospital->address->post_code }} {{ $hospital->address->ken_name }}{{ $hospital->address->city_name }}{{ $hospital->address->town_name }}{{ $hospital->address->block_name }}";
 
-                geocoder.geocode({ 'address': address }, function(results, status) {
-                    if (status === 'OK' && results[0]) {
-                        map_center = results[0].geometry.location;
-                        map.setCenter(map_center);
+            geocoder.geocode({ 'address': address }, function(results, status) {
+                if (status === 'OK' && results[0]) {
+                    map_center = results[0].geometry.location;
+                    map.setCenter(map_center);
 
-                        var marker = new google.maps.Marker({
-                            map: map,
-                            position: map_center,
-                            animation: google.maps.Animation.DROP,
-                            title: "{{ $hospital->name }}"
-                        });
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        position: map_center,
+                        animation: google.maps.Animation.DROP,
+                        title: "{{ $hospital->name }}"
+                    });
 
-                        var infowindow = new google.maps.InfoWindow({
-                            content: '<div id="map_content"><p>{{ $hospital->name }}<br />{{ $hospital->address->post_code }} {{ $hospital->address->ken_name }}{{ $hospital->address->city_name }}{{ $hospital->address->town_name }}{{ $hospital->address->block_name }}</p></div>'
-                        });
+                    var infowindow = new google.maps.InfoWindow({
+                        content: '<div id="map_content"><p>{{ $hospital->name }}<br />{{ $hospital->address->post_code }} {{ $hospital->address->ken_name }}{{ $hospital->address->city_name }}{{ $hospital->address->town_name }}{{ $hospital->address->block_name }}</p></div>'
+                    });
 
-                        google.maps.event.addListener(marker, 'click', function() {
-                            infowindow.open(map, marker);
-                        });
-                    } else {
-                        alert("住所から位置の取得ができませんでした。: " + status);
-                    }
-                });
-            }
+                    google.maps.event.addListener(marker, 'click', function() {
+                        infowindow.open(map, marker);
+                    });
+                } else {
+                    alert("住所から位置の取得ができませんでした。: " + status);
+                }
+            });
+        }
 
-            // APIキーは本番環境のみ記載（警告メールくるため）
-        </script>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRa-cremQslgLCSgbEImhI5WZADCBZZEM&callback=initMap" async defer></script>
+        // APIキーは本番環境のみ記載（警告メールくるため）
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRa-cremQslgLCSgbEImhI5WZADCBZZEM&callback=initMap" async defer></script>

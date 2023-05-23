@@ -15,7 +15,15 @@
                                 <input type="text" name="search_hospital" id="search_hospital" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="search_address">住所</label>
+                                <label for="search_prefecture">都道府県</label>
+                                <input type="text" name="search_prefecture" id="search_prefecture" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="search_city">市区町村</label>
+                                <input type="text" name="search_city" id="search_city" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="search_address">町名番地</label>
                                 <input type="text" name="search_address" id="search_address" class="form-control">
                             </div>
                             <div class="form-group">
@@ -76,7 +84,13 @@
                                     <div class="card-body">
                                         <p><strong>タイトル:</strong> {{ $hospital->title }}</p>
                                         <p><strong>住所:</strong> {{ $hospital->address->post_code }} {{ $hospital->address->ken_name }}{{ $hospital->address->city_name }}{{ $hospital->address->town_name }}{{ $hospital->address->block_name }}</p>
+                                        <p><strong>予約日:</strong> {{ $hospital->reservation->date }}</p>
                                         <a href="{{ route('hospitals.show', $hospital->id) }}" class="btn btn-primary">詳細を見る</a>
+                                        <form action="{{ route('reservations.cancel', $hospital->reservation->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">予約キャンセル</button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>

@@ -86,7 +86,7 @@ class ReservationsController extends Controller
         $reservation->comment = $request->input('comment');
         $reservation->save();
 
-        return view('users_home');
+        return redirect()->route('hospitals.show', ['hospital' => $hospitalId])->with('success', '予約が完了しました。');
     }
 
     /**

@@ -3,6 +3,11 @@
 @section('content')
     <div class="container">
         <h1 class="text-center">管理者ホーム画面</h1>
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
 
         <div class="row">
             <div class="col-md-3">
@@ -19,12 +24,27 @@
                                 <input type="text" name="search_hospital" id="search_hospital" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="search_address">住所</label>
+                                <label for="search_prefecture">都道府県</label>
+                                <input type="text" name="search_prefecture" id="search_prefecture" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="search_city">市区町村</label>
+                                <input type="text" name="search_city" id="search_city" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="search_address">町名番地</label>
                                 <input type="text" name="search_address" id="search_address" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="search_hours">診療時間</label>
-                                <input type="text" name="search_hours" id="search_hours" class="form-control">
+                                <label for="search_tag">タグ</label>
+                                <select name="search_tag" id="search_tag" class="form-control">
+                                    <option value="">選択してください</option>
+                                    @isset($tags)
+                                        @foreach ($tags as $tag)
+                                            <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                        @endforeach
+                                    @endisset
+                                </select>
                             </div>
                             <button type="submit" class="btn btn-primary">検索</button>
                         </form>

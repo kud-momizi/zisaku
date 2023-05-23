@@ -71,31 +71,43 @@
                             <thead>
                                 <tr>
                                     <th>{{ __('曜日') }}</th>
-                                    <th>{{ __('午前') }}</th>
-                                    <th>{{ __('午前予約可能数') }}</th>
-                                    <th>{{ __('午後') }}</th>
-                                    <th>{{ __('午後予約可能数') }}</th>
+                                    <th>{{ __('午前診療時間') }}</th>
+                                    <th>{{ __('午後診療時間') }}</th>
+                                    <th>{{ __('予約可能数') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach(['日', '月', '火', '水', '木', '金', '土'] as $idx => $dayOfWeek)
+                                @for ($i = 0; $i < 7; $i++)
+                                    @php
+                                        $dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][$i];
+                                        $availability = $availabilities[$i] ?? null;
+                                    @endphp
                                     <tr>
-                                        <td>{{ $dayOfWeek }}</td>
+                                        @if ($dayOfWeek === '日' || $dayOfWeek === '土')
+                                            <td class="text-danger">{{ $dayOfWeek }}</td>
+                                        @else
+                                            <td>{{ $dayOfWeek }}</td>
+                                        @endif
                                         <td>
-                                            @if (isset($hospital->availabilities[$idx]['am_start_time']))
-                                                {{ substr($hospital->availabilities[$idx]['am_start_time'], 0, 5) }}
-                                                ~{{ substr($hospital->availabilities[$idx]['am_end_time'], 0, 5) }}
+                                            @if (isset($availability['am_start_time']))
+                                                {{ substr($availability['am_start_time'], 0, 5) }}
+                                                ~{{ substr($availability['am_end_time'], 0, 5) }}
                                             @endif
                                         </td>
                                         <td>
-                                            @if (isset($hospital->availabilities[$idx]['pm_start_time']))
-                                                {{ substr($hospital->availabilities[$idx]['pm_start_time'], 0, 5) }}
-                                                ~{{ substr($hospital->availabilities[$idx]['pm_end_time'], 0, 5) }}
+                                            @if (isset($availability['pm_start_time']))
+                                                {{ substr($availability['pm_start_time'], 0, 5) }}
+                                                ~{{ substr($availability['pm_end_time'], 0, 5) }}
                                             @endif
                                         </td>
-                                        <td>{{ $hospital->availabilities[$idx]['day_limit'] ?? '' }}</td>
+                                        <td>{{ $availability['day_limit'] ?? '' }}</td>
                                     </tr>
-                                @endforeach
+                                @endfor
+                                @if (empty($availabilities))
+                                    <tr>
+                                        <td colspan="5" class="text-center">{{ __('データなし') }}</td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -135,13 +147,14 @@
                     content: '<div id="map_content"><p>{{ $hospital->name }}<br />{{ $hospital->address->post_code }} {{ $hospital->address->ken_name }}{{ $hospital->address->city_name }}{{ $hospital->address->town_name }}{{ $hospital->address->block_name }}</p></div>'
                 });
 
-google.maps.event.addListener(marker, 'click', function() {
-    infowindow.open(map, marker);
-});
-} else {
-alert("住所から位置の取得ができませんでした。: " + status);
-}
-});
-}
+                google.maps.event.addListener(marker, 'click', function() {
+                    infowindow.open(map, marker);
+                });
+
+            } else {
+                alert("住所から位置の取得ができませんでした。: " + status);
+            }
+        });
+    }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRa-cremQslgLCSgbEImhI5WZADCBZZEM&callback=initMap" async defer></script>

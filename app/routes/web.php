@@ -28,7 +28,6 @@ Route::group(['middleware' => 'role:2'], function () {
     Route::put('/hospitals_edit/{hospital_id}', 'HospitalsController@update')->name('hospitals.update');
     Route::post('hospitals/{hospital}/tags/add', 'HospitalsController@addTag')->name('hospitals.tags.add');
     Route::get('/reservations', 'HospitalsController@showReservationIndex')->name('reservations.index');
-    Route::delete('/admins/{hospital}', 'HospitalsController@destroy')->name('hospitals.destroy');
 
     Route::get('/availabilities_create/{hospital_id}', 'AvailabilityController@create')->name('availabilities.create');
     Route::post('/availabilities_create/{hospital_id}', 'AvailabilityController@store')->name('availabilities.store');
@@ -55,6 +54,7 @@ Route::group(['middleware' => 'role:0'], function () {
     Route::get('/admins/{hospital}', 'AdminsController@show')->name('admins.show');
     Route::get('/admins', 'UsersController@index')->name('users.index');
     Route::delete('/admins_index/{user}', 'UsersController@destroy')->name('users.destroy');
+    Route::delete('/admins/{hospital}', 'HospitalsController@destroy')->name('hospitals.destroy');
 
     Route::resource('tags', 'TagController')->except(['index', 'show']);
     Route::get('tags_create', 'TagController@create')->name('tags.create');
