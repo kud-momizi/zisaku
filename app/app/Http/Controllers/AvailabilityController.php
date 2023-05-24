@@ -102,17 +102,25 @@ class AvailabilityController extends Controller
      */
     public function update(Request $request, $availability_id)
     {
-        // dd($request->all());
-        $availability = Availability::findOrFail($availability_id);
-
+        //  dd($request->all());
+        $availability = Availability::where('id', $availability_id)->firstOrFail();
+        // dd($availability);
+    
         $request->validate([
-            'am_start_time' => 'nullable|date_format:H:i',
-            'am_end_time' => 'nullable|date_format:H:i|after:am_start_time',
+            'am_start_time' => 'nullable',
+            'am_end_time' => 'nullable|after:am_start_time',
             'day_limit' => 'nullable|integer|min:0',
-            'pm_start_time' => 'nullable|date_format:H:i',
-            'pm_end_time' => 'nullable|date_format:H:i|after:pm_start_time',
+            'pm_start_time' => 'nullable',
+            'pm_end_time' => 'nullable|after:pm_start_time',
             'day_of_week' => 'nullable|integer|min:0|max:6',
         ]);
+
+        // $availability->am_start_time = $request->input('am_start_time');
+        // $availability->am_end_time = $request->input('am_end_time');
+        // $availability->day_limit = $request->input('day_limit');
+        // $availability->pm_start_time = $request->input('pm_start_time');
+        // $availability->pm_end_time = $request->input('pm_end_time');
+        // $availability->day_of_week = $request->input('day_of_week');
 
         $availability->am_start_time = $request->am_start_time;
         $availability->am_end_time = $request->am_end_time;

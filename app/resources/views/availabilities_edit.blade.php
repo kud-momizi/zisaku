@@ -3,6 +3,17 @@
 @section('content')
     <div class="container">
         <h1>予約可能時間の編集</h1>
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            
+        @endif
+
         <h2>{{ $hospital->name }}</h2>
 
         <form action="{{ route('availabilities.update', ['availability_id' => $availability->id]) }}" method="POST">
